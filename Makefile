@@ -28,8 +28,8 @@ fmt:
 	@go run $(licenser) apply -r "ClavinJune/bjora" 2> /dev/null
 
 test:
-	@go test -coverprofile=coverage -covermode=count ./...
-	@go tool cover -html=coverage
+	@go test -json -coverprofile=coverage.out -covermode=count ./... > result.json
+	@go tool cover -html=coverage.out
 
 wire:
 	@go run $(wire) ./...
