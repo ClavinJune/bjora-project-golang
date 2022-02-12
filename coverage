@@ -1,0 +1,5 @@
+mode: count
+github.com/clavinjune/bjora-project-golang/pkg/gender.go:32.36,33.49 1 3
+github.com/clavinjune/bjora-project-golang/pkg/gender.go:40.2,40.24 1 1
+github.com/clavinjune/bjora-project-golang/pkg/gender.go:34.14,35.20 1 1
+github.com/clavinjune/bjora-project-golang/pkg/gender.go:36.16,37.22 1 1
