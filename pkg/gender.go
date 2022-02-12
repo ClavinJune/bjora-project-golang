@@ -12,10 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package pkg
 
-import "fmt"
+import "strings"
 
-func main() {
-	fmt.Println("Hello, World")
+// Gender define gender enum
+type Gender string
+
+const (
+	// GenderMale defines male
+	GenderMale Gender = "male"
+	// GenderFemale defines female
+	GenderFemale Gender = "female"
+	// GenderUndefined defines undefined gender
+	GenderUndefined Gender = "gender_undefined"
+)
+
+// GenderFrom parse str to Gender
+func GenderFrom(str string) Gender {
+	switch strings.ToUpper(strings.TrimSpace(str)) {
+	case "MALE":
+		return GenderMale
+	case "FEMALE":
+		return GenderFemale
+	}
+
+	return GenderUndefined
 }

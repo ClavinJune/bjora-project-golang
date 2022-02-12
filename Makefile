@@ -27,5 +27,9 @@ fmt:
 	@go mod tidy
 	@go run $(licenser) apply -r "ClavinJune/bjora" 2> /dev/null
 
+test:
+	@go test -coverprofile=coverage.out -covermode=count ./...
+	@go tool cover -html=coverage.out
+
 wire:
 	@go run $(wire) ./...
