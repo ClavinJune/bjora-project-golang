@@ -67,7 +67,7 @@ func ProvideService(repo pkg.UserRepository) *service {
 	return svcInst
 }
 
-// ProvideHandler provides user HTTP handler
+// ProvideHandler provides user HTTP handlerutil
 func ProvideHandler(svc pkg.UserService) *handler {
 	hdlOnce.Do(func() {
 		hdlInst = &handler{

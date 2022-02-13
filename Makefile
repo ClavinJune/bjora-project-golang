@@ -34,7 +34,7 @@ fmt:
 
 gen: clean tools/stringer
 	@go generate ./...
-	@$(MAKE) mock wire
+	@$(MAKE) wire mock
 
 mock:
 	@go run $(mocker) --all --with-expecter

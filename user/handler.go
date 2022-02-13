@@ -15,19 +15,44 @@
 package user
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/clavinjune/bjora-project-golang/pkg"
+	"github.com/clavinjune/bjora-project-golang/pkg/handlerutil"
+	"github.com/julienschmidt/httprouter"
 )
 
 type handler struct {
 	svc pkg.UserService
 }
 
-func (h handler) Store() http.HandlerFunc {
-	panic("implement me")
+func (h *handler) Store() (string, httprouter.Handle) {
+
+	handle := func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		defer handlerutil.CloseRequest(r)
+
+		d := json.NewDecoder(r.Body)
+		d.DisallowUnknownFields()
+
+		var b RequestStore
+		if err := d.Decode(&b); err != nil {
+			log.Println("here", err)
+
+			handlerutil.Response().
+				Error(err).
+				Write(w)
+			return
+		}
+
+		handlerutil.Response().Error(fmt.Errorf("ehehehe")).Write(w)
+	}
+
+	return "/user", handle
 }
 
-func (h handler) FetchByEmail() http.HandlerFunc {
+func (h *handler) FetchByEmail() httprouter.Handle {
 	panic("implement me")
 }

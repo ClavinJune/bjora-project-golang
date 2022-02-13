@@ -16,7 +16,8 @@ package pkg
 
 import (
 	"context"
-	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 type (
@@ -29,6 +30,7 @@ type (
 		Address           string `json:"address"`
 		ProfilePictureURL string `json:"profile_picture"`
 		Birthday          string `json:"birthday"`
+		Role              Role   `json:"role"`
 	}
 
 	// UserEntity defines database model
@@ -41,6 +43,7 @@ type (
 		Address           string
 		ProfilePictureURL string
 		Birthday          string
+		Role              Role
 	}
 
 	// UserRepository used for accessing storage
@@ -57,7 +60,7 @@ type (
 
 	// UserHandler used for handling HTTP Request
 	UserHandler interface {
-		Store() http.HandlerFunc
-		FetchByEmail() http.HandlerFunc
+		Store() (string, httprouter.Handle)
+		FetchByEmail() httprouter.Handle
 	}
 )
