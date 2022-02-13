@@ -20,6 +20,11 @@ check:
 	@go run $(releaser) check
 	@go run $(wire) check ./...
 
+clean:
+	@rm -rf result.json coverage.out
+	@find . -type f -name "*_gen.go" -delete
+	@find . -type d -name "mocks" -exec rm -rf {} +
+
 fmt:
 	@gofmt -w -s .
 	@goimports -w .
@@ -27,9 +32,22 @@ fmt:
 	@go mod tidy
 	@go run $(licenser) apply -r "ClavinJune/bjora" 2> /dev/null
 
+gen: clean tools/stringer
+	@go generate ./...
+	@$(MAKE) mock wire
+
+mock:
+	@go run $(mocker) --all --with-expecter
+
 test:
-	@go test -json -coverprofile=coverage.out -covermode=count ./... > result.json
+	@go test -race -v ./...
+
+test/coverage:
+	@go test -v -json -coverprofile=coverage.out -covermode=count `go list ./... | grep -v mocks` > result.json
 	@go tool cover -html=coverage.out
+
+tools/stringer:
+	@go install $(stringer)
 
 wire:
 	@go run $(wire) ./...

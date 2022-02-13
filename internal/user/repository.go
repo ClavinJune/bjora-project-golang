@@ -12,32 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate stringer -type=Gender -trimprefix=Gender
+package user
 
-package pkg
+import (
+	"context"
+	"database/sql"
 
-import "strings"
-
-// Gender define gender enum
-type Gender int8
-
-const (
-	// GenderUndefined defines undefined gender
-	GenderUndefined Gender = iota
-	// GenderMale defines male
-	GenderMale
-	// GenderFemale defines female
-	GenderFemale
+	"github.com/clavinjune/bjora-project-golang/pkg"
 )
 
-// GenderFrom parse str to Gender
-func GenderFrom(str string) Gender {
-	switch strings.ToUpper(strings.TrimSpace(str)) {
-	case "MALE":
-		return GenderMale
-	case "FEMALE":
-		return GenderFemale
-	}
+type repository struct {
+	db *sql.DB
+}
 
-	return GenderUndefined
+func (r *repository) Store(ctx context.Context, entity *pkg.UserEntity) (*pkg.UserEntity, error) {
+	panic("implement me")
+}
+
+func (r *repository) FetchByEmail(ctx context.Context, email string) (*pkg.UserEntity, error) {
+	panic("implement me")
 }

@@ -14,29 +14,50 @@
 
 package pkg
 
-import "time"
+import (
+	"context"
+	"net/http"
+)
 
 type (
 	// User defines publicly exposed user attributes
 	User struct {
-		ID             string    `json:"id"`
-		Username       string    `json:"username"`
-		Email          string    `json:"email"`
-		Gender         Gender    `json:"gender"`
-		Address        string    `json:"address"`
-		ProfilePicture string    `json:"profile_picture"`
-		Birthday       time.Time `json:"birthday"`
+		ID                string `json:"id"`
+		Username          string `json:"username"`
+		Email             string `json:"email"`
+		Gender            Gender `json:"gender"`
+		Address           string `json:"address"`
+		ProfilePictureURL string `json:"profile_picture"`
+		Birthday          string `json:"birthday"`
 	}
 
 	// UserEntity defines database model
 	UserEntity struct {
-		ID             string
-		Username       string
-		Email          string
-		Password       string
-		Gender         string
-		Address        string
-		ProfilePicture string
-		Birthday       string
+		ID                string
+		Username          string
+		Email             string
+		Password          string
+		Gender            Gender
+		Address           string
+		ProfilePictureURL string
+		Birthday          string
+	}
+
+	// UserRepository used for accessing storage
+	UserRepository interface {
+		Store(ctx context.Context, entity *UserEntity) (*UserEntity, error)
+		FetchByEmail(ctx context.Context, email string) (*UserEntity, error)
+	}
+
+	// UserService used for communicating with repository
+	UserService interface {
+		Store(ctx context.Context, user *User) (*User, error)
+		FetchByEmail(ctx context.Context, email string) (*User, error)
+	}
+
+	// UserHandler used for handling HTTP Request
+	UserHandler interface {
+		Store() http.HandlerFunc
+		FetchByEmail() http.HandlerFunc
 	}
 )
