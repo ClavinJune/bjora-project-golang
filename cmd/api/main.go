@@ -15,58 +15,53 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"strings"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/clavinjune/bjora-project-golang/pkg"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
-	resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-		return aws.Endpoint{
-			PartitionID:       "aws",
-			URL:               "http://localhost:9000",
-			SigningRegion:     region,
-			HostnameImmutable: true,
-		}, nil
-	})
+	fmt.Println(pkg.GenderFemale, pkg.GenderUndefined)
 
-	cfg, err := config.LoadDefaultConfig(context.Background(),
-		config.WithEndpointResolverWithOptions(resolver))
-	if err != nil {
-		panic(err)
-	}
-
-	s3Client := s3.NewFromConfig(cfg)
-	_, err = s3Client.PutObject(context.Background(), &s3.PutObjectInput{
-		Bucket: aws.String(os.Getenv("AWS_S3_BUCKET")),
-		Key:    aws.String("testing.txt"),
-		Body:   strings.NewReader("ehehehhe"),
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	resp, err := http.Get("http://localhost:9000/pictures/testing.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
-
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(string(b))
+	//resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+	//	return aws.Endpoint{
+	//		PartitionID:       "aws",
+	//		URL:               "http://localhost:9000",
+	//		SigningRegion:     region,
+	//		HostnameImmutable: true,
+	//	}, nil
+	//})
+	//
+	//cfg, err := config.LoadDefaultConfig(context.Background(),
+	//	config.WithEndpointResolverWithOptions(resolver))
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//s3Client := s3.NewFromConfig(cfg)
+	//_, err = s3Client.PutObject(context.Background(), &s3.PutObjectInput{
+	//	Bucket: aws.String(os.Getenv("AWS_S3_BUCKET")),
+	//	Key:    aws.String("testing.txt"),
+	//	Body:   strings.NewReader("ehehehhe"),
+	//})
+	//
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//resp, err := http.Get("http://localhost:9000/pictures/testing.txt")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//defer func() {
+	//	_ = resp.Body.Close()
+	//}()
+	//
+	//b, err := io.ReadAll(resp.Body)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//fmt.Println(string(b))
 }

@@ -12,32 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate stringer -type=Gender -trimprefix=Gender
+package user_test
 
-package pkg
+import (
+	"context"
+	"fmt"
+	"testing"
 
-import "strings"
-
-// Gender define gender enum
-type Gender int8
-
-const (
-	// GenderUndefined defines undefined gender
-	GenderUndefined Gender = iota
-	// GenderMale defines male
-	GenderMale
-	// GenderFemale defines female
-	GenderFemale
+	"github.com/clavinjune/bjora-project-golang/internal/user"
+	"github.com/clavinjune/bjora-project-golang/mocks"
+	"github.com/clavinjune/bjora-project-golang/pkg"
+	"github.com/stretchr/testify/mock"
 )
 
-// GenderFrom parse str to Gender
-func GenderFrom(str string) Gender {
-	switch strings.ToUpper(strings.TrimSpace(str)) {
-	case "MALE":
-		return GenderMale
-	case "FEMALE":
-		return GenderFemale
-	}
+func TestService_FetchByEmail(t *testing.T) {
+	m := new(mocks.UserRepository)
+	m.EXPECT().
+		FetchByEmail(mock.Anything, mock.Anything).
+		Return(&pkg.UserEntity{ID: "1"}, nil)
 
-	return GenderUndefined
+	svc := user.ProvideService(m)
+
+	u, err := svc.FetchByEmail(context.Background(), "email")
+
+	fmt.Println(u, err)
+
+	m.AssertExpectations(t)
 }

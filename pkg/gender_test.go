@@ -56,3 +56,44 @@ func TestGenderFrom(t *testing.T) {
 		})
 	}
 }
+
+func TestGender_String(t *testing.T) {
+	tt := []struct {
+		name string
+		in   pkg.Gender
+		want string
+	}{
+		{
+			name: "male",
+			in:   pkg.GenderMale,
+			want: "Male",
+		},
+		{
+			name: "female",
+			in:   pkg.GenderFemale,
+			want: "Female",
+		},
+		{
+			name: "undefined",
+			in:   pkg.GenderUndefined,
+			want: "Undefined",
+		},
+		{
+			name: "random",
+			in:   pkg.Gender(16),
+			want: "Gender(16)",
+		},
+	}
+
+	for i := range tt {
+		tc := tt[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := tc.in.String()
+
+			assert.Equal(t, tc.want, got)
+		})
+	}
+}
