@@ -48,8 +48,9 @@ type (
 
 	// UserRepository used for accessing storage
 	UserRepository interface {
-		Store(ctx context.Context, entity *UserEntity) (*UserEntity, error)
+		Fetch(ctx context.Context) ([]*UserEntity, error)
 		FetchByEmail(ctx context.Context, email string) (*UserEntity, error)
+		Store(ctx context.Context, entity *UserEntity) (*UserEntity, error)
 	}
 
 	// UserService used for communicating with repository

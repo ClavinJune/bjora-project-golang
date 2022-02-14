@@ -20,6 +20,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/clavinjune/bjora-project-golang/pkg/closerutil"
+
 	"github.com/clavinjune/bjora-project-golang/pkg"
 	"github.com/clavinjune/bjora-project-golang/pkg/handlerutil"
 	"github.com/julienschmidt/httprouter"
@@ -32,7 +34,7 @@ type handler struct {
 func (h *handler) Store() (string, httprouter.Handle) {
 
 	handle := func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		defer handlerutil.CloseRequest(r)
+		defer closerutil.Close(r.Body)
 
 		d := json.NewDecoder(r.Body)
 		d.DisallowUnknownFields()

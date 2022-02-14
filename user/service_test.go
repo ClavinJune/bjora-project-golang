@@ -21,8 +21,8 @@ import (
 
 	"github.com/clavinjune/bjora-project-golang/user"
 
-	"github.com/clavinjune/bjora-project-golang/mocks"
 	"github.com/clavinjune/bjora-project-golang/pkg"
+	"github.com/clavinjune/bjora-project-golang/pkg/mocks"
 	"github.com/stretchr/testify/mock"
 )
 

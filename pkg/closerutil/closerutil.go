@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package handlerutil
+package closerutil
 
 import (
+	"io"
 	"log"
-	"net/http"
 )
 
-// CloseRequest closes request body
-// better be use using defer
-func CloseRequest(r *http.Request) {
-	if err := r.Body.Close(); err != nil {
+// Close helps to log Closer's error
+// better use it with defer
+func Close(closer io.Closer) {
+	if err := closer.Close(); err != nil {
 		log.Println(err)
 	}
 }

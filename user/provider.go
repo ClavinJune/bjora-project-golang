@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	repoInst *repository
+	repoInst *postgres
 	repoOnce sync.Once
 
 	svcInst *service
@@ -39,16 +39,16 @@ var (
 		ProvideService,
 		ProvideHandler,
 
-		wire.Bind(new(pkg.UserRepository), new(*repository)),
+		wire.Bind(new(pkg.UserRepository), new(*postgres)),
 		wire.Bind(new(pkg.UserService), new(*service)),
 		wire.Bind(new(pkg.UserHandler), new(*handler)),
 	)
 )
 
-// ProvideRepository provides user repository
-func ProvideRepository(db *sql.DB) *repository {
+// ProvideRepository provides user postgres
+func ProvideRepository(db *sql.DB) *postgres {
 	repoOnce.Do(func() {
-		repoInst = &repository{
+		repoInst = &postgres{
 			db: db,
 		}
 	})

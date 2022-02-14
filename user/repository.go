@@ -17,18 +17,103 @@ package user
 import (
 	"context"
 	"database/sql"
+	"time"
+
+	"github.com/clavinjune/bjora-project-golang/pkg/closerutil"
+	"github.com/clavinjune/bjora-project-golang/pkg/errutil"
 
 	"github.com/clavinjune/bjora-project-golang/pkg"
 )
 
-type repository struct {
+const (
+	queryFetch        string = `SELECT * FROM bjora.users`
+	queryFetchByEmail string = queryFetch + ` WHERE email = $1 and is_active = true`
+	queryStore        string = `INSERT INTO bjora.users
+(id, username, email, password, gender, address, profile_picture_url, birthday, role)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`
+)
+
+type postgres struct {
 	db *sql.DB
 }
 
-func (r *repository) Store(ctx context.Context, entity *pkg.UserEntity) (*pkg.UserEntity, error) {
-	panic("implement me")
+func (p *postgres) Fetch(ctx context.Context) ([]*pkg.UserEntity, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	rows, err := p.db.QueryContext(ctx, queryFetch)
+
+	if err != nil {
+		return nil, errutil.New(err, errutil.WithCaller())
+	}
+
+	defer closerutil.Close(rows)
+
+	return p.scanUsers(rows)
 }
 
-func (r *repository) FetchByEmail(ctx context.Context, email string) (*pkg.UserEntity, error) {
-	panic("implement me")
+func (p *postgres) FetchByEmail(ctx context.Context, email string) (*pkg.UserEntity, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	rows, err := p.db.QueryContext(ctx, queryFetchByEmail, email)
+
+	if err != nil {
+		return nil, errutil.New(err, errutil.WithCaller())
+	}
+
+	defer closerutil.Close(rows)
+	if rows.Next() {
+		return p.scanUser(rows)
+	}
+
+	return nil, errutil.New(sql.ErrNoRows, errutil.WithCaller())
+}
+
+func (p *postgres) Store(ctx context.Context, entity *pkg.UserEntity) (*pkg.UserEntity, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	rows, err := p.db.QueryContext(ctx, queryStore,
+		entity.ID, entity.Username, entity.Email, entity.Password, entity.Gender, entity.Address,
+		entity.ProfilePictureURL, entity.Birthday, entity.Role)
+
+	if err != nil {
+		return nil, errutil.New(err, errutil.WithCaller())
+	}
+
+	defer closerutil.Close(rows)
+	if rows.Next() {
+		return p.scanUser(rows)
+	}
+
+	return nil, errutil.New(sql.ErrNoRows, errutil.WithCaller(), errutil.WithMessage("failed to store entity"))
+}
+
+func (p *postgres) scanUsers(rows *sql.Rows) ([]*pkg.UserEntity, error) {
+	result := make([]*pkg.UserEntity, 0)
+
+	for rows.Next() {
+		e, err := p.scanUser(rows)
+		if err != nil {
+			return nil, errutil.New(err, errutil.WithCaller())
+		}
+
+		result = append(result, e)
+	}
+
+	return result, nil
+}
+
+func (postgres) scanUser(rows *sql.Rows) (*pkg.UserEntity, error) {
+	var e pkg.UserEntity
+
+	err := rows.Scan(&e.ID, &e.Username, &e.Email, &e.Password,
+		&e.Gender, &e.Address, &e.ProfilePictureURL, &e.Birthday, &e.Role)
+
+	if err != nil {
+		return nil, errutil.New(err, errutil.WithCaller())
+	}
+
+	return &e, nil
 }

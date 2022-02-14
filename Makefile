@@ -37,7 +37,7 @@ gen: clean tools/stringer
 	@$(MAKE) wire mock
 
 mock:
-	@go run $(mocker) --all --with-expecter
+	@go run $(mocker) --all --with-expecter --output "./pkg/mocks"
 
 test:
 	@go test -race -v ./...
