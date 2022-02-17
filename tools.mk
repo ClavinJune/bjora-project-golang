@@ -14,6 +14,7 @@
 
 licenser := github.com/liamawhite/licenser@v0.6.0
 linter   := github.com/golangci/golangci-lint/cmd/golangci-lint@v1.44.0
+migrator := github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1
 mocker   := github.com/vektra/mockery/v2@v2.10.0
 releaser := github.com/goreleaser/goreleaser@v1.4.1
 stringer := golang.org/x/tools/cmd/stringer@v0.1.9

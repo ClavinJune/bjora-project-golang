@@ -13,6 +13,8 @@
 # limitations under the License.
 
 include tools.mk
+include .env
+export
 
 check:
 	@go run $(licenser) verify
@@ -24,6 +26,35 @@ clean:
 	@rm -rf result.json coverage.out
 	@find . -type f -name "*_gen.go" -delete
 	@find . -type d -name "mocks" -exec rm -rf {} +
+
+db/connect:
+	@PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_HOST}" -U "${POSTGRES_USERNAME}"
+
+db/migrate/up:
+	@go run -tags "postgres" $(migrator) \
+	-source file://blueprint/db-migration \
+	-database "postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?sslmode=disable" \
+	-verbose up
+
+db/migrate/down:
+	@go run -tags "postgres" $(migrator) \
+	-source file://blueprint/db-migration \
+	-database "postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?sslmode=disable" \
+	-verbose down
+
+docker/compose/up:
+	@docker compose up
+
+docker/compose/down:
+	@docker compose stop && docker compose down
+
+docker/volume/create:
+	@docker volume create minio-data
+	@docker volume create postgres-data
+
+docker/volume/clean:
+	@docker volume rm minio-data || true
+	@docker volume rm postgres-data || true
 
 fmt:
 	@gofmt -w -s .

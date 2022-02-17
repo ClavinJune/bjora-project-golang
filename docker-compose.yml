@@ -26,18 +26,20 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
+      POSTGRES_DB: "${POSTGRES_DATABASE}"
+      POSTGRES_USER: "${POSTGRES_USERNAME}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./scripts/docker/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
   minio:
-    image: 'quay.io/minio/minio:RELEASE.2022-02-07T08-17-33Z'
+    image: 'quay.io/minio/minio:RELEASE.2022-02-16T00-35-27Z'
     ports:
       - 9000:9000
       - 9001:9001
     environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: miniominio
+      MINIO_ROOT_USER: "${AWS_ACCESS_KEY_ID}"
+      MINIO_ROOT_PASSWORD: "${AWS_SECRET_ACCESS_KEY}"
     volumes:
       - minio-data:/data
     command: ["server", "/data", "--console-address", ":9001"]
