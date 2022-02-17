@@ -28,7 +28,7 @@ clean:
 	@find . -type d -name "mocks" -exec rm -rf {} +
 
 db/connect:
-	@PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_HOST}" -U "${POSTGRES_USERNAME}"
+	@PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_HOST}" -U "${POSTGRES_USERNAME}" "${POSTGRES_DATABASE}"
 
 db/migrate/up:
 	@go run -tags "postgres" $(migrator) \
