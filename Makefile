@@ -13,6 +13,8 @@
 # limitations under the License.
 
 include tools.mk
+include .env
+export
 
 check:
 	@go run $(licenser) verify
@@ -25,6 +27,35 @@ clean:
 	@find . -type f -name "*_gen.go" -delete
 	@find . -type d -name "mocks" -exec rm -rf {} +
 
+db/connect:
+	@PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_HOST}" -U "${POSTGRES_USERNAME}" "${POSTGRES_DATABASE}"
+
+db/migrate/up:
+	@go run -tags "postgres" $(migrator) \
+	-source file://blueprint/db-migration \
+	-database "postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?sslmode=disable" \
+	-verbose up
+
+db/migrate/down:
+	@go run -tags "postgres" $(migrator) \
+	-source file://blueprint/db-migration \
+	-database "postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?sslmode=disable" \
+	-verbose down
+
+docker/compose/up:
+	@docker compose up
+
+docker/compose/down:
+	@docker compose stop && docker compose down
+
+docker/volume/create:
+	@docker volume create minio-data
+	@docker volume create postgres-data
+
+docker/volume/clean:
+	@docker volume rm minio-data || true
+	@docker volume rm postgres-data || true
+
 fmt:
 	@gofmt -w -s .
 	@goimports -w .
@@ -32,12 +63,12 @@ fmt:
 	@go mod tidy
 	@go run $(licenser) apply -r "ClavinJune/bjora" 2> /dev/null
 
-gen: clean tools/stringer
+gen: clean tools/install/stringer
 	@go generate ./...
-	@$(MAKE) mock wire
+	@$(MAKE) wire mock fmt
 
 mock:
-	@go run $(mocker) --all --with-expecter
+	@go run $(mocker) --all --with-expecter --output "./pkg/mocks"
 
 test:
 	@go test -race -v ./...
@@ -46,7 +77,7 @@ test/coverage:
 	@go test -v -json -coverprofile=coverage.out -covermode=count `go list ./... | grep -v mocks` > result.json
 	@go tool cover -html=coverage.out
 
-tools/stringer:
+tools/install/stringer:
 	@go install $(stringer)
 
 wire:

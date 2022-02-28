@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright 2022 ClavinJune/bjora
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,11 +13,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-licenser := github.com/liamawhite/licenser@v0.6.0
-linter   := github.com/golangci/golangci-lint/cmd/golangci-lint@v1.44.0
-migrator := github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1
-mocker   := github.com/vektra/mockery/v2@v2.10.0
-releaser := github.com/goreleaser/goreleaser@v1.4.1
-stringer := golang.org/x/tools/cmd/stringer@v0.1.9
-wire     := github.com/google/wire/cmd/wire@v0.5.0
+set -e
+#
+#psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+#    CREATE USER docker;
+#    CREATE DATABASE docker;
+#    GRANT ALL PRIVILEGES ON DATABASE docker TO docker;
+#EOSQL

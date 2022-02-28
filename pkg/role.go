@@ -12,30 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package user_test
+//go:generate stringer -type=Role -trimprefix=Role
 
-import (
-	"context"
-	"fmt"
-	"testing"
+package pkg
 
-	"github.com/clavinjune/bjora-project-golang/internal/user"
-	"github.com/clavinjune/bjora-project-golang/mocks"
-	"github.com/clavinjune/bjora-project-golang/pkg"
-	"github.com/stretchr/testify/mock"
+import "strings"
+
+// Role define role enum
+type Role int8
+
+const (
+	// RoleUndefined defines undefined role
+	RoleUndefined Role = iota
+	// RoleAdmin defines admin
+	RoleAdmin
+	// RoleMember defines member
+	RoleMember
 )
 
-func TestService_FetchByEmail(t *testing.T) {
-	m := new(mocks.UserRepository)
-	m.EXPECT().
-		FetchByEmail(mock.Anything, mock.Anything).
-		Return(&pkg.UserEntity{ID: "1"}, nil)
+// RoleFrom parse str to Role
+func RoleFrom(str string) Role {
+	switch strings.ToUpper(strings.TrimSpace(str)) {
+	case "ADMIN":
+		return RoleAdmin
+	case "MEMBER":
+		return RoleMember
+	}
 
-	svc := user.ProvideService(m)
-
-	u, err := svc.FetchByEmail(context.Background(), "email")
-
-	fmt.Println(u, err)
-
-	m.AssertExpectations(t)
+	return RoleUndefined
 }

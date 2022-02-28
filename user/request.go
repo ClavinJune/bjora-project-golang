@@ -14,21 +14,12 @@
 
 package user
 
-import (
-	"context"
-	"database/sql"
-
-	"github.com/clavinjune/bjora-project-golang/pkg"
-)
-
-type repository struct {
-	db *sql.DB
-}
-
-func (r *repository) Store(ctx context.Context, entity *pkg.UserEntity) (*pkg.UserEntity, error) {
-	panic("implement me")
-}
-
-func (r *repository) FetchByEmail(ctx context.Context, email string) (*pkg.UserEntity, error) {
-	panic("implement me")
+// RequestStore defines attribute for Storing User
+type RequestStore struct {
+	Username       string `json:"username"`
+	Email          string `json:"email"`
+	Gender         string `json:"gender"`
+	Address        string `json:"address"`
+	Birthday       string `json:"birthday"`
+	ProfilePicture []byte `json:"profile_picture"`
 }

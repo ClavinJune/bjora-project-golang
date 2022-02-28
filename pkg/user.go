@@ -16,7 +16,6 @@ package pkg
 
 import (
 	"context"
-	"net/http"
 )
 
 type (
@@ -29,6 +28,7 @@ type (
 		Address           string `json:"address"`
 		ProfilePictureURL string `json:"profile_picture"`
 		Birthday          string `json:"birthday"`
+		Role              Role   `json:"role"`
 	}
 
 	// UserEntity defines database model
@@ -41,23 +41,19 @@ type (
 		Address           string
 		ProfilePictureURL string
 		Birthday          string
+		Role              Role
 	}
 
 	// UserRepository used for accessing storage
 	UserRepository interface {
-		Store(ctx context.Context, entity *UserEntity) (*UserEntity, error)
+		Fetch(ctx context.Context) ([]*UserEntity, error)
 		FetchByEmail(ctx context.Context, email string) (*UserEntity, error)
+		Store(ctx context.Context, entity *UserEntity) (*UserEntity, error)
 	}
 
 	// UserService used for communicating with repository
 	UserService interface {
 		Store(ctx context.Context, user *User) (*User, error)
 		FetchByEmail(ctx context.Context, email string) (*User, error)
-	}
-
-	// UserHandler used for handling HTTP Request
-	UserHandler interface {
-		Store() http.HandlerFunc
-		FetchByEmail() http.HandlerFunc
 	}
 )

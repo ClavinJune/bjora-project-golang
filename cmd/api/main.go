@@ -15,15 +15,10 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/clavinjune/bjora-project-golang/pkg"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
-	fmt.Println(pkg.GenderFemale, pkg.GenderUndefined)
-
 	//resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 	//	return aws.Endpoint{
 	//		PartitionID:       "aws",

@@ -18,13 +18,14 @@ import (
 	"database/sql"
 	"sync"
 
+	"github.com/ClavinJune/bjora-project-golang-modules/interfaces"
 	"github.com/clavinjune/bjora-project-golang/pkg"
 
 	"github.com/google/wire"
 )
 
 var (
-	repoInst *repository
+	repoInst *postgres
 	repoOnce sync.Once
 
 	svcInst *service
@@ -39,16 +40,16 @@ var (
 		ProvideService,
 		ProvideHandler,
 
-		wire.Bind(new(pkg.UserRepository), new(*repository)),
+		wire.Bind(new(pkg.UserRepository), new(*postgres)),
 		wire.Bind(new(pkg.UserService), new(*service)),
-		wire.Bind(new(pkg.UserHandler), new(*handler)),
+		wire.Bind(new(interfaces.FiberRouter), new(*handler)),
 	)
 )
 
-// ProvideRepository provides user repository
-func ProvideRepository(db *sql.DB) *repository {
+// ProvideRepository provides user postgres
+func ProvideRepository(db *sql.DB) *postgres {
 	repoOnce.Do(func() {
-		repoInst = &repository{
+		repoInst = &postgres{
 			db: db,
 		}
 	})
@@ -67,7 +68,7 @@ func ProvideService(repo pkg.UserRepository) *service {
 	return svcInst
 }
 
-// ProvideHandler provides user HTTP handler
+// ProvideHandler provides user HTTP handlerutil
 func ProvideHandler(svc pkg.UserService) *handler {
 	hdlOnce.Do(func() {
 		hdlInst = &handler{
