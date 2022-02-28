@@ -18,6 +18,7 @@ import (
 	"database/sql"
 	"sync"
 
+	"github.com/ClavinJune/bjora-project-golang-modules/interfaces"
 	"github.com/clavinjune/bjora-project-golang/pkg"
 
 	"github.com/google/wire"
@@ -41,7 +42,7 @@ var (
 
 		wire.Bind(new(pkg.UserRepository), new(*postgres)),
 		wire.Bind(new(pkg.UserService), new(*service)),
-		wire.Bind(new(pkg.UserHandler), new(*handler)),
+		wire.Bind(new(interfaces.FiberRouter), new(*handler)),
 	)
 )
 

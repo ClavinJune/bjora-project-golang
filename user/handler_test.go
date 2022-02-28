@@ -15,10 +15,12 @@
 package user_test
 
 import (
-	"context"
 	"database/sql"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/clavinjune/bjora-project-golang/pkg"
@@ -27,11 +29,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestService_FetchByEmail(t *testing.T) {
-	m := new(mocks.UserRepository)
+func TestHandler_FetchByEmail(t *testing.T) {
+	m := new(mocks.UserService)
 	m.EXPECT().
 		FetchByEmail(mock.Anything, "example").
-		Return(&pkg.UserEntity{ID: "1"}, nil)
+		Return(&pkg.User{ID: "1"}, nil)
 	m.EXPECT().
 		FetchByEmail(mock.Anything, "notexists").
 		Return(nil, sql.ErrNoRows)
@@ -39,22 +41,28 @@ func TestService_FetchByEmail(t *testing.T) {
 		FetchByEmail(mock.Anything, mock.Anything).
 		Return(nil, nil)
 
-	svc := user.ProvideService(m)
+	app := fiber.New()
+	user.ProvideHandler(m).ApplyRoute(app.Group("/user"))
 
 	tt := []struct {
-		Name  string
-		Email string
-		Error error
+		Name       string
+		Endpoint   string
+		ExpectCode int
 	}{
 		{
-			Name:  "with not exists email",
-			Email: "notexists",
-			Error: sql.ErrNoRows,
+			Name:       "without email query",
+			Endpoint:   "/user/",
+			ExpectCode: http.StatusNotFound,
 		},
 		{
-			Name:  "with exists email",
-			Email: "example",
-			Error: nil,
+			Name:       "with not exists email",
+			Endpoint:   "/user/?email=notexists",
+			ExpectCode: http.StatusNotFound,
+		},
+		{
+			Name:       "with exists email",
+			Endpoint:   "/user/?email=example",
+			ExpectCode: http.StatusOK,
 		},
 	}
 
@@ -64,8 +72,11 @@ func TestService_FetchByEmail(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
 
-			_, err := svc.FetchByEmail(context.Background(), tc.Email)
-			assert.ErrorIs(t, err, tc.Error)
+			resp, err := app.Test(httptest.NewRequest(http.MethodGet, tc.Endpoint, nil))
+			assert.NoError(t, err)
+			defer resp.Body.Close()
+
+			assert.Equal(t, tc.ExpectCode, resp.StatusCode)
 		})
 	}
 }

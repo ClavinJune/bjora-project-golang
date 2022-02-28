@@ -15,59 +15,45 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"net"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
-	"github.com/clavinjune/bjora-project-golang/user"
-
-	"github.com/julienschmidt/httprouter"
-
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
-	r := httprouter.New()
-
-	u := user.Wire(nil)
-	r.GET(u.Store())
-
-	t := 60 * time.Second
-	s := &http.Server{
-		Handler:           r,
-		ReadTimeout:       t,
-		ReadHeaderTimeout: t,
-		WriteTimeout:      t,
-		IdleTimeout:       t,
-	}
-
-	l, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("APP_PORT")))
-	if err != nil {
-		panic(err)
-	}
-
-	go func() {
-		log.Printf("run at %s", l.Addr())
-		if err := s.Serve(l); err != nil {
-			log.Println(err)
-		}
-	}()
-
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
-	<-ch
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := s.Shutdown(ctx); err != nil {
-		log.Println(err)
-	}
+	//r := httprouter.New()
+	//
+	//u := user.Wire(nil)
+	//r.GET(u.Store())
+	//
+	//t := 60 * time.Second
+	//s := &http.Server{
+	//	Handler:           r,
+	//	ReadTimeout:       t,
+	//	ReadHeaderTimeout: t,
+	//	WriteTimeout:      t,
+	//	IdleTimeout:       t,
+	//}
+	//
+	//l, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("APP_PORT")))
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//go func() {
+	//	log.Printf("run at %s", l.Addr())
+	//	if err := s.Serve(l); err != nil {
+	//		log.Println(err)
+	//	}
+	//}()
+	//
+	//ch := make(chan os.Signal, 1)
+	//signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
+	//<-ch
+	//
+	//ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	//defer cancel()
+	//if err := s.Shutdown(ctx); err != nil {
+	//	log.Println(err)
+	//}
 
 	//resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 	//	return aws.Endpoint{

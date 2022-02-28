@@ -15,46 +15,34 @@
 package user
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
-
-	"github.com/clavinjune/bjora-project-golang/pkg/closerutil"
+	"strings"
 
 	"github.com/clavinjune/bjora-project-golang/pkg"
-	"github.com/clavinjune/bjora-project-golang/pkg/handlerutil"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gofiber/fiber/v2"
 )
 
 type handler struct {
-	svc pkg.UserService
+	svc    pkg.UserService
+	router fiber.Router
 }
 
-func (h *handler) Store() (string, httprouter.Handle) {
+func (h *handler) ApplyRoute(router fiber.Router) {
+	router.Get("/", h.fetchByEmail())
+}
 
-	handle := func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		defer closerutil.Close(r.Body)
-
-		d := json.NewDecoder(r.Body)
-		d.DisallowUnknownFields()
-
-		var b RequestStore
-		if err := d.Decode(&b); err != nil {
-			log.Println("here", err)
-
-			handlerutil.Response().
-				Error(err).
-				Write(w)
-			return
+func (h *handler) fetchByEmail() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		email := c.Query("email")
+		if strings.TrimSpace(email) == "" {
+			return c.SendStatus(http.StatusNotFound)
 		}
 
-		handlerutil.Response().Error(fmt.Errorf("ehehehe")).Write(w)
+		user, err := h.svc.FetchByEmail(c.Context(), email)
+		if err != nil {
+			return c.SendStatus(http.StatusNotFound)
+		}
+
+		return c.JSON(user)
 	}
-
-	return "/user", handle
-}
-
-func (h *handler) FetchByEmail() httprouter.Handle {
-	panic("implement me")
 }

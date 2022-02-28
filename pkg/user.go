@@ -16,8 +16,6 @@ package pkg
 
 import (
 	"context"
-
-	"github.com/julienschmidt/httprouter"
 )
 
 type (
@@ -57,11 +55,5 @@ type (
 	UserService interface {
 		Store(ctx context.Context, user *User) (*User, error)
 		FetchByEmail(ctx context.Context, email string) (*User, error)
-	}
-
-	// UserHandler used for handling HTTP Request
-	UserHandler interface {
-		Store() (string, httprouter.Handle)
-		FetchByEmail() httprouter.Handle
 	}
 )
