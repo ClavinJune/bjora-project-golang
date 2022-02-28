@@ -17,10 +17,10 @@ package user
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/clavinjune/bjora-project-golang/pkg/closerutil"
-	"github.com/clavinjune/bjora-project-golang/pkg/errutil"
 
 	"github.com/clavinjune/bjora-project-golang/pkg"
 )
@@ -44,7 +44,7 @@ func (p *postgres) Fetch(ctx context.Context) ([]*pkg.UserEntity, error) {
 	rows, err := p.db.QueryContext(ctx, queryFetch)
 
 	if err != nil {
-		return nil, errutil.New(err, errutil.WithCaller())
+		return nil, err
 	}
 
 	defer closerutil.Close(rows)
@@ -59,7 +59,7 @@ func (p *postgres) FetchByEmail(ctx context.Context, email string) (*pkg.UserEnt
 	rows, err := p.db.QueryContext(ctx, queryFetchByEmail, email)
 
 	if err != nil {
-		return nil, errutil.New(err, errutil.WithCaller())
+		return nil, err
 	}
 
 	defer closerutil.Close(rows)
@@ -67,7 +67,7 @@ func (p *postgres) FetchByEmail(ctx context.Context, email string) (*pkg.UserEnt
 		return p.scanUser(rows)
 	}
 
-	return nil, errutil.New(sql.ErrNoRows, errutil.WithCaller())
+	return nil, sql.ErrNoRows
 }
 
 func (p *postgres) Store(ctx context.Context, entity *pkg.UserEntity) (*pkg.UserEntity, error) {
@@ -79,7 +79,7 @@ func (p *postgres) Store(ctx context.Context, entity *pkg.UserEntity) (*pkg.User
 		entity.ProfilePictureURL, entity.Birthday, entity.Role)
 
 	if err != nil {
-		return nil, errutil.New(err, errutil.WithCaller())
+		return nil, err
 	}
 
 	defer closerutil.Close(rows)
@@ -87,7 +87,7 @@ func (p *postgres) Store(ctx context.Context, entity *pkg.UserEntity) (*pkg.User
 		return p.scanUser(rows)
 	}
 
-	return nil, errutil.New(sql.ErrNoRows, errutil.WithCaller(), errutil.WithMessage("failed to store entity"))
+	return nil, fmt.Errorf("%w: failed to store entity", sql.ErrNoRows)
 }
 
 func (p *postgres) scanUsers(rows *sql.Rows) ([]*pkg.UserEntity, error) {
@@ -96,7 +96,7 @@ func (p *postgres) scanUsers(rows *sql.Rows) ([]*pkg.UserEntity, error) {
 	for rows.Next() {
 		e, err := p.scanUser(rows)
 		if err != nil {
-			return nil, errutil.New(err, errutil.WithCaller())
+			return nil, err
 		}
 
 		result = append(result, e)
@@ -112,7 +112,7 @@ func (postgres) scanUser(rows *sql.Rows) (*pkg.UserEntity, error) {
 		&e.Gender, &e.Address, &e.ProfilePictureURL, &e.Birthday, &e.Role)
 
 	if err != nil {
-		return nil, errutil.New(err, errutil.WithCaller())
+		return nil, err
 	}
 
 	return &e, nil

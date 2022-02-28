@@ -63,9 +63,9 @@ fmt:
 	@go mod tidy
 	@go run $(licenser) apply -r "ClavinJune/bjora" 2> /dev/null
 
-gen: clean tools/stringer
+gen: clean tools/install/stringer
 	@go generate ./...
-	@$(MAKE) wire mock
+	@$(MAKE) wire mock fmt
 
 mock:
 	@go run $(mocker) --all --with-expecter --output "./pkg/mocks"
@@ -77,7 +77,7 @@ test/coverage:
 	@go test -v -json -coverprofile=coverage.out -covermode=count `go list ./... | grep -v mocks` > result.json
 	@go tool cover -html=coverage.out
 
-tools/stringer:
+tools/install/stringer:
 	@go install $(stringer)
 
 wire:
