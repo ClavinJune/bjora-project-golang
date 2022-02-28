@@ -45,7 +45,9 @@ func (p *postgres) Fetch(ctx context.Context) ([]*pkg.UserEntity, error) {
 		return nil, err
 	}
 
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	return p.scanUsers(rows)
 }
@@ -60,7 +62,9 @@ func (p *postgres) FetchByEmail(ctx context.Context, email string) (*pkg.UserEnt
 		return nil, err
 	}
 
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 	if rows.Next() {
 		return p.scanUser(rows)
 	}
@@ -80,7 +84,9 @@ func (p *postgres) Store(ctx context.Context, entity *pkg.UserEntity) (*pkg.User
 		return nil, err
 	}
 
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 	if rows.Next() {
 		return p.scanUser(rows)
 	}

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+importer := golang.org/x/tools/cmd/goimports@latest
 licenser := github.com/liamawhite/licenser@v0.6.0
 linter   := github.com/golangci/golangci-lint/cmd/golangci-lint@v1.44.0
 migrator := github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1

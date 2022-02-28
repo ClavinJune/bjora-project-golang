@@ -23,8 +23,7 @@ import (
 )
 
 type handler struct {
-	svc    pkg.UserService
-	router fiber.Router
+	svc pkg.UserService
 }
 
 func (h *handler) ApplyRoute(router fiber.Router) {
