@@ -19,44 +19,44 @@ import (
 )
 
 func main() {
-	//resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-	//	return aws.Endpoint{
-	//		PartitionID:       "aws",
-	//		URL:               "http://localhost:9000",
-	//		SigningRegion:     region,
-	//		HostnameImmutable: true,
-	//	}, nil
-	//})
+	// resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+	// 	return aws.Endpoint{
+	// 		PartitionID:       "aws",
+	// 		URL:               "http://localhost:9000",
+	// 		SigningRegion:     region,
+	// 		HostnameImmutable: true,
+	// 	}, nil
+	// })
 	//
-	//cfg, err := config.LoadDefaultConfig(context.Background(),
-	//	config.WithEndpointResolverWithOptions(resolver))
-	//if err != nil {
-	//	panic(err)
-	//}
+	// cfg, err := config.LoadDefaultConfig(context.Background(),
+	// 	config.WithEndpointResolverWithOptions(resolver))
+	// if err != nil {
+	// 	panic(err)
+	// }
 	//
-	//s3Client := s3.NewFromConfig(cfg)
-	//_, err = s3Client.PutObject(context.Background(), &s3.PutObjectInput{
-	//	Bucket: aws.String(os.Getenv("AWS_S3_BUCKET")),
-	//	Key:    aws.String("testing.txt"),
-	//	Body:   strings.NewReader("ehehehhe"),
-	//})
+	// s3Client := s3.NewFromConfig(cfg)
+	// _, err = s3Client.PutObject(context.Background(), &s3.PutObjectInput{
+	// 	Bucket: aws.String(os.Getenv("AWS_S3_BUCKET")),
+	// 	Key:    aws.String("testing.txt"),
+	// 	Body:   strings.NewReader("ehehehhe"),
+	// })
 	//
-	//if err != nil {
-	//	panic(err)
-	//}
+	// if err != nil {
+	// 	panic(err)
+	// }
 	//
-	//resp, err := http.Get("http://localhost:9000/pictures/testing.txt")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//defer func() {
-	//	_ = resp.Body.Close()
-	//}()
+	// resp, err := http.Get("http://localhost:9000/pictures/testing.txt")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer func() {
+	// 	_ = resp.Body.Close()
+	// }()
 	//
-	//b, err := io.ReadAll(resp.Body)
-	//if err != nil {
-	//	panic(err)
-	//}
+	// b, err := io.ReadAll(resp.Body)
+	// if err != nil {
+	// 	panic(err)
+	// }
 	//
-	//fmt.Println(string(b))
+	// fmt.Println(string(b))
 }

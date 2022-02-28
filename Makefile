@@ -58,7 +58,7 @@ docker/volume/clean:
 
 fmt:
 	@gofmt -w -s .
-	@goimports -w .
+	@go run $(importer) -w .
 	@go vet ./...
 	@go mod tidy
 	@go run $(licenser) apply -r "ClavinJune/bjora" 2> /dev/null
