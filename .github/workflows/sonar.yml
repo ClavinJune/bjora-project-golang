@@ -24,7 +24,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: test
-        run: make mock test/coverage
+        run: cp .env.example .env && make mock test/coverage
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
