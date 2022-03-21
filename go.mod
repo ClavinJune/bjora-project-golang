@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/ClavinJune/bjora-project-golang-modules v0.0.2
-	github.com/gofiber/fiber/v2 v2.29.0
+	github.com/gofiber/fiber/v2 v2.30.0
 	github.com/google/wire v0.5.0
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.4
