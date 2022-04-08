@@ -7,7 +7,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.31.0
 	github.com/google/wire v0.5.0
 	github.com/joho/godotenv v1.4.0
-	github.com/lib/pq v1.10.4
+	github.com/lib/pq v1.10.5
 	github.com/stretchr/testify v1.7.1
 )
 
