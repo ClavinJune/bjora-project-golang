@@ -14,46 +14,18 @@
 
 package pkg
 
-import (
-	"context"
-)
+import "database/sql"
 
 type (
-	// User defines publicly exposed user attributes
-	User struct {
-		ID                string `json:"id"`
-		Username          string `json:"username"`
-		Email             string `json:"email"`
-		Gender            Gender `json:"gender"`
-		Address           string `json:"address"`
-		ProfilePictureURL string `json:"profile_picture"`
-		Birthday          string `json:"birthday"`
-		Role              Role   `json:"role"`
-	}
-
-	// UserEntity defines database model
+	// UserEntity is used to store user data to database
 	UserEntity struct {
-		ID                string
-		Username          string
-		Email             string
-		Password          string
-		Gender            Gender
-		Address           string
-		ProfilePictureURL string
-		Birthday          string
-		Role              Role
-	}
-
-	// UserRepository used for accessing storage
-	UserRepository interface {
-		Fetch(ctx context.Context) ([]*UserEntity, error)
-		FetchByEmail(ctx context.Context, email string) (*UserEntity, error)
-		Store(ctx context.Context, entity *UserEntity) (*UserEntity, error)
-	}
-
-	// UserService used for communicating with repository
-	UserService interface {
-		Store(ctx context.Context, user *User) (*User, error)
-		FetchByEmail(ctx context.Context, email string) (*User, error)
+		*Entity
+		ID       sql.NullString
+		Username sql.NullString
+		Email    sql.NullString
+		Password sql.NullString
+		Gender   sql.NullString
+		Address  sql.NullString
+		Birthday sql.NullString
 	}
 )

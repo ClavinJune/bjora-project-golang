@@ -18,7 +18,7 @@ export
 
 check:
 	@go run $(licenser) verify
-	@#go run $(linter) run
+	@go run $(linter) run
 	@go run $(wire) check ./...
 
 clean:
@@ -70,7 +70,7 @@ mock:
 	@go run $(mocker) --all --with-expecter --output "./pkg/mocks"
 
 test:
-	@go test -race -v ./...
+	@go test -count=1 -race -v ./...
 
 test/coverage:
 	@go test -v -json -coverprofile=coverage.out -covermode=count `go list ./... | grep -v mocks` > result.json

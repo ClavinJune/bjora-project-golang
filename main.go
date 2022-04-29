@@ -12,16 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build wireinject
+package main
 
-package user
+import "fmt"
 
-import (
-	"database/sql"
-
-	"github.com/google/wire"
-)
-
-func Wire(db *sql.DB) *handler {
-	panic(wire.Build(ProviderSet))
+func main() {
+	fmt.Println("Hello, World!")
 }

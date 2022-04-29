@@ -17,8 +17,9 @@ package pkg_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/clavinjune/bjora-project-golang/pkg"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestGenderFrom(t *testing.T) {
@@ -49,10 +50,11 @@ func TestGenderFrom(t *testing.T) {
 
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+			r := require.New(t)
 
 			got := pkg.GenderFrom(tc.in)
 
-			assert.Equal(t, tc.want, got)
+			r.Equal(tc.want, got)
 		})
 	}
 }
@@ -90,10 +92,11 @@ func TestGender_String(t *testing.T) {
 
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+			r := require.New(t)
 
 			got := tc.in.String()
 
-			assert.Equal(t, tc.want, got)
+			r.Equal(tc.want, got)
 		})
 	}
 }
