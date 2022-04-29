@@ -18,7 +18,7 @@ export
 
 check:
 	@go run $(licenser) verify
-	@go run $(linter) run
+	@#go run $(linter) run
 	@go run $(wire) check ./...
 
 clean:
