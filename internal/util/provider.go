@@ -12,20 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pkg_test
+package util
 
 import (
-	"log"
-	"testing"
+	"sync"
 
-	"github.com/joho/godotenv"
+	"github.com/bwmarrin/snowflake"
+	"github.com/google/wire"
 )
 
-func TestMain(m *testing.M) {
-	log.Println("setup test environment variable")
-	err := godotenv.Overload("../.env.test")
-	if err != nil {
-		panic(err)
-	}
-	m.Run()
+var (
+	snowInst *snowflake.Node
+	snowOnce sync.Once
+
+	// ProviderSet contains all provider from util package
+	ProviderSet wire.ProviderSet = wire.NewSet(
+		ProvideSnowflake,
+	)
+)
+
+// ProvideSnowflake produces *snowflake.Node
+func ProvideSnowflake() *snowflake.Node {
+	snowOnce.Do(func() {
+		snowInst, _ = snowflake.NewNode(1)
+	})
+
+	return snowInst
 }

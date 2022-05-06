@@ -17,51 +17,62 @@ package pkg
 import (
 	"database/sql"
 	"os"
+	"strings"
 	"time"
-)
-
-var (
-	defaultMetadataString = sql.NullString{
-		String: os.Getenv("APP_NAME"),
-		Valid:  true,
-	}
 )
 
 // Entity provides metadata columns
 type Entity struct {
-	CreatedAt      sql.NullTime
-	CreatedBy      sql.NullString
-	LastModifiedAt sql.NullTime
-	LastModifiedBy sql.NullString
-	DeletedAt      sql.NullTime
-	DeletedBy      sql.NullString
+	CreatedAt      sql.NullTime   `db:"created_at"`
+	CreatedBy      sql.NullString `db:"created_by"`
+	LastModifiedAt sql.NullTime   `db:"last_modified_at"`
+	LastModifiedBy sql.NullString `db:"last_modified_by"`
+	IsActive       sql.NullBool   `db:"is_active"`
 }
 
-// IsDeleted check whether entity has been deleted or not
-func (e *Entity) IsDeleted() bool {
-	return e.DeletedAt.Valid &&
-		!e.DeletedAt.Time.IsZero() &&
-		e.DeletedBy.Valid &&
-		e.DeletedBy.String != ""
+// Update updates LastModifiedAt and LastModifiedBy
+func (e *Entity) Update(by string) {
+	t, s := createMetadataNow(by)
+	e.LastModifiedAt = t
+	e.LastModifiedBy = s
+}
+
+// Delete updates LastModifiedAt, LastModifiedBy, and IsActive
+func (e *Entity) Delete(by string) {
+	e.Update(by)
+	e.IsActive = sql.NullBool{
+		Bool:  false,
+		Valid: true,
+	}
 }
 
 // NewEntity creates new metadata
 func NewEntity() *Entity {
-	defaultMetadataTime := sql.NullTime{
+	t, s := createMetadataNow(os.Getenv("APP_NAME"))
+
+	return &Entity{
+		CreatedAt:      t,
+		CreatedBy:      s,
+		LastModifiedAt: t,
+		LastModifiedBy: s,
+		IsActive: sql.NullBool{
+			Bool:  true,
+			Valid: true,
+		},
+	}
+}
+
+// createMetadataNow produces valid sql.NullTime(now) and sql.NullString(by)
+func createMetadataNow(by string) (sql.NullTime, sql.NullString) {
+	t := sql.NullTime{
 		Time:  time.Now(),
 		Valid: true,
 	}
 
-	return &Entity{
-		CreatedAt:      defaultMetadataTime,
-		CreatedBy:      defaultMetadataString,
-		LastModifiedAt: defaultMetadataTime,
-		LastModifiedBy: defaultMetadataString,
-		DeletedAt: sql.NullTime{
-			Valid: false,
-		},
-		DeletedBy: sql.NullString{
-			Valid: false,
-		},
+	s := sql.NullString{
+		String: strings.TrimSpace(by),
+		Valid:  true,
 	}
+
+	return t, s
 }

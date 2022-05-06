@@ -15,7 +15,6 @@
 package pkg_test
 
 import (
-	"database/sql"
 	"os"
 	"testing"
 	"time"
@@ -25,6 +24,7 @@ import (
 )
 
 func TestNewEntity(t *testing.T) {
+	t.Parallel()
 	appName := os.Getenv("APP_NAME")
 	r := require.New(t)
 	e := pkg.NewEntity()
@@ -39,112 +39,47 @@ func TestNewEntity(t *testing.T) {
 	r.True(e.LastModifiedBy.Valid)
 	r.Equal(appName, e.LastModifiedBy.String)
 
-	r.False(e.DeletedAt.Valid)
-	r.True(e.DeletedAt.Time.IsZero())
-	r.False(e.DeletedBy.Valid)
-	r.Empty(e.DeletedBy.String)
-	r.False(e.IsDeleted())
+	r.True(e.IsActive.Valid)
+	r.True(e.IsActive.Bool)
 }
 
-func TestEntity_IsDeleted(t *testing.T) {
-	tt := []struct {
-		name      string
-		deletedAt sql.NullTime
-		deletedBy sql.NullString
-		want      bool
-	}{
-		{
-			name:      "deletedAt empty deletedBy empty",
-			deletedAt: sql.NullTime{},
-			deletedBy: sql.NullString{},
-			want:      false,
-		},
-		{
-			name: "deletedAt time not zero but not valid",
-			deletedAt: sql.NullTime{
-				Time:  time.Now(),
-				Valid: false,
-			},
-			deletedBy: sql.NullString{},
-			want:      false,
-		},
-		{
-			name: "deletedAt time zero but valid",
-			deletedAt: sql.NullTime{
-				Time:  time.Time{},
-				Valid: true,
-			},
-			deletedBy: sql.NullString{},
-			want:      false,
-		},
-		{
-			name: "deletedAt time not zero and valid but deletedBy empty",
-			deletedAt: sql.NullTime{
-				Time:  time.Now(),
-				Valid: true,
-			},
-			deletedBy: sql.NullString{},
-			want:      false,
-		},
-		{
-			name: "deletedBy string not empty but not valid",
-			deletedAt: sql.NullTime{
-				Time:  time.Now(),
-				Valid: true,
-			},
-			deletedBy: sql.NullString{
-				String: "testing",
-				Valid:  false,
-			},
-			want: false,
-		},
-		{
-			name: "deletedBy string empty but valid",
-			deletedAt: sql.NullTime{
-				Time:  time.Now(),
-				Valid: true,
-			},
-			deletedBy: sql.NullString{
-				String: "",
-				Valid:  true,
-			},
-			want: false,
-		},
-		{
-			name:      "deletedBy string not empty and valid but deletedAt empty",
-			deletedAt: sql.NullTime{},
-			deletedBy: sql.NullString{
-				String: "testing",
-				Valid:  true,
-			},
-			want: false,
-		},
-		{
-			name: "deletedBy not empty and deletedAt not empty",
-			deletedAt: sql.NullTime{
-				Time:  time.Now(),
-				Valid: true,
-			},
-			deletedBy: sql.NullString{
-				String: "testing",
-				Valid:  true,
-			},
-			want: true,
-		},
-	}
+func TestEntity_Update(t *testing.T) {
+	t.Parallel()
+	r := require.New(t)
+	e := pkg.NewEntity()
+	time.Sleep(time.Millisecond)
 
-	for i := range tt {
-		tc := tt[i]
+	prevTime := e.LastModifiedAt.Time
+	by := "TestEntity_Update"
 
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			r := require.New(t)
+	e.Update(by)
 
-			e := pkg.NewEntity()
-			e.DeletedAt = tc.deletedAt
-			e.DeletedBy = tc.deletedBy
+	r.True(e.LastModifiedAt.Valid)
+	r.NotEqual(prevTime, e.LastModifiedAt.Time)
+	r.Less(prevTime, e.LastModifiedAt.Time)
 
-			r.Equal(tc.want, e.IsDeleted())
-		})
-	}
+	r.True(e.LastModifiedBy.Valid)
+	r.Equal(by, e.LastModifiedBy.String)
+}
+
+func TestEntity_Delete(t *testing.T) {
+	t.Parallel()
+	r := require.New(t)
+	e := pkg.NewEntity()
+	time.Sleep(time.Millisecond)
+
+	prevTime := e.LastModifiedAt.Time
+	by := "TestEntity_Delete"
+
+	e.Delete(by)
+
+	r.True(e.LastModifiedBy.Valid)
+	r.NotEqual(prevTime, e.LastModifiedAt.Time)
+	r.Less(prevTime, e.LastModifiedAt.Time)
+
+	r.True(e.LastModifiedBy.Valid)
+	r.Equal(by, e.LastModifiedBy.String)
+
+	r.True(e.IsActive.Valid)
+	r.False(e.IsActive.Bool)
 }

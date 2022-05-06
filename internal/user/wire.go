@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pkg_test
+//go:build wireinject
+
+package user
 
 import (
-	"log"
-	"testing"
-
-	"github.com/joho/godotenv"
+	"github.com/clavinjune/bjora-project-golang/internal/util"
+	"github.com/google/wire"
+	"github.com/jmoiron/sqlx"
 )
 
-func TestMain(m *testing.M) {
-	log.Println("setup test environment variable")
-	err := godotenv.Overload("../.env.test")
-	if err != nil {
-		panic(err)
-	}
-	m.Run()
+func Wire(db *sqlx.DB) *service {
+	panic(wire.Build(
+		ProviderSet,
+		util.ProviderSet,
+	))
 }

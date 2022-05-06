@@ -127,6 +127,15 @@ issues:
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:
     # Exclude some linters from running on tests files.
+    - linters:
+        - staticcheck
+      text: "SA3000:"
+    - linters:
+        - revive
+      text: "unexported-return:"
+    - linters:
+        - errcheck
+      text: "Error return value of `rows.Close` is not checked"
     - path: _test\.go
       linters:
         - errcheck

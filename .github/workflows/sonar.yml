@@ -23,7 +23,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: test
-        run: cp .env.example .env && make gen check test/coverage
+        run: cp .env.example .env && make gen check test/fuzz test/coverage
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:

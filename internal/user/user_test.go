@@ -12,20 +12,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pkg_test
+package user_test
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"testing"
 
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/joho/godotenv"
 )
 
 func TestMain(m *testing.M) {
 	log.Println("setup test environment variable")
-	err := godotenv.Overload("../.env.test")
+	err := godotenv.Overload("../../.env.test")
 	if err != nil {
 		panic(err)
 	}
+
+	log.Println("migrate up test database")
+	migrator, err := migrate.New(
+		"file://../../blueprint/db-migration",
+		fmt.Sprintf(
+			"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+			os.Getenv("POSTGRES_USERNAME"),
+			os.Getenv("POSTGRES_PASSWORD"),
+			os.Getenv("POSTGRES_HOST"),
+			os.Getenv("POSTGRES_PORT"),
+			os.Getenv("POSTGRES_DATABASE"),
+		),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	_ = migrator.Down()
+	if err := migrator.Up(); err != nil {
+		panic(err)
+	}
+	defer func() {
+		log.Println("migrate down test database")
+		_ = migrator.Down()
+	}()
 	m.Run()
 }

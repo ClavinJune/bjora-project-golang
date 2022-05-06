@@ -12,10 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+//go:generate stringer -type=Gender -trimprefix=Gender
 
-import "fmt"
+package enum
 
-func main() {
-	fmt.Println("Hello, World!")
+import "strings"
+
+// Gender define gender enum
+type Gender int8
+
+const (
+	// GenderUndefined defines undefined gender
+	GenderUndefined Gender = iota
+	// GenderMale defines male
+	GenderMale
+	// GenderFemale defines female
+	GenderFemale
+)
+
+// GenderFrom parse str to Gender
+func GenderFrom(str string) Gender {
+	switch strings.ToUpper(strings.TrimSpace(str)) {
+	case "MALE":
+		return GenderMale
+	case "FEMALE":
+		return GenderFemale
+	}
+
+	return GenderUndefined
 }

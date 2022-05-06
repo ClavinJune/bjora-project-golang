@@ -12,32 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate stringer -type=Gender -trimprefix=Gender
+package util_test
 
-package pkg
+import (
+	"testing"
 
-import "strings"
-
-// Gender define gender enum
-type Gender int8
-
-const (
-	// GenderUndefined defines undefined gender
-	GenderUndefined Gender = iota
-	// GenderMale defines male
-	GenderMale
-	// GenderFemale defines female
-	GenderFemale
+	"github.com/bwmarrin/snowflake"
+	"github.com/clavinjune/bjora-project-golang/internal/util"
+	"github.com/stretchr/testify/require"
 )
 
-// GenderFrom parse str to Gender
-func GenderFrom(str string) Gender {
-	switch strings.ToUpper(strings.TrimSpace(str)) {
-	case "MALE":
-		return GenderMale
-	case "FEMALE":
-		return GenderFemale
+func TestProvideSnowflake(t *testing.T) {
+	t.Parallel()
+
+	gen1 := util.ProvideSnowflake()
+	gen2 := util.ProvideSnowflake()
+
+	ch := make(chan snowflake.ID, 2)
+
+	goFunc := func(g *snowflake.Node, c chan<- snowflake.ID) {
+		c <- g.Generate()
 	}
 
-	return GenderUndefined
+	go goFunc(gen1, ch)
+	go goFunc(gen2, ch)
+
+	ids := [2]snowflake.ID{
+		<-ch,
+		<-ch,
+	}
+
+	r := require.New(t)
+	r.NotEqual(ids[0], ids[1])
 }

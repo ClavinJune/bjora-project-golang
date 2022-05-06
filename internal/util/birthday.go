@@ -12,20 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pkg_test
+package util
 
 import (
-	"log"
-	"testing"
-
-	"github.com/joho/godotenv"
+	"time"
 )
 
-func TestMain(m *testing.M) {
-	log.Println("setup test environment variable")
-	err := godotenv.Overload("../.env.test")
+const (
+	birthdayTimeLayout string = "2006-01-02"
+)
+
+// BirthdayFromStr parses string to time.Time using birthdayTimeLayout
+func BirthdayFromStr(str string) (time.Time, error) {
+	t, err := time.Parse(birthdayTimeLayout, str)
 	if err != nil {
-		panic(err)
+		return time.Time{}, WrapError(err)
 	}
-	m.Run()
+
+	return t, nil
+}
+
+// BirthdayFromTime parses time to string using birthdayTimeLayout
+func BirthdayFromTime(t time.Time) string {
+	return t.Format(birthdayTimeLayout)
 }
