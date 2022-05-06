@@ -93,9 +93,11 @@ test/fuzz:
 	@go test -v -fuzz=FuzzGenderFrom -fuzztime=1s ./pkg/enum/
 	@go test -v -fuzz=FuzzEnvironmentFrom -fuzztime=1s ./pkg/enum/
 
-test/coverage:
+test/coverage: docker/compose/up/test
+	@sleep 1
 	@go test -count=1 -v -json -coverprofile=coverage.out -covermode=count `go list ./... | grep -v mocks` > result.json
 	@go tool cover -html=coverage.out
+	@$(MAKE) docker/compose/down/test
 
 tools/install/stringer:
 	@go install $(stringer)

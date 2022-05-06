@@ -19,6 +19,7 @@ result.json
 
 .env*
 !.env.example
+!.env.test
 
 **/*_gen.go
 **/mocks/
