@@ -12,14 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package user
+package util
 
-// RequestStore defines attribute for Storing User
-type RequestStore struct {
-	Username       string `json:"username"`
-	Email          string `json:"email"`
-	Gender         string `json:"gender"`
-	Address        string `json:"address"`
-	Birthday       string `json:"birthday"`
-	ProfilePicture []byte `json:"profile_picture"`
+import (
+	"sync"
+
+	"github.com/bwmarrin/snowflake"
+	"github.com/google/wire"
+)
+
+var (
+	snowInst *snowflake.Node
+	snowOnce sync.Once
+
+	// ProviderSet contains all provider from util package
+	ProviderSet wire.ProviderSet = wire.NewSet(
+		ProvideSnowflake,
+	)
+)
+
+// ProvideSnowflake produces *snowflake.Node
+func ProvideSnowflake() *snowflake.Node {
+	snowOnce.Do(func() {
+		snowInst, _ = snowflake.NewNode(1)
+	})
+
+	return snowInst
 }

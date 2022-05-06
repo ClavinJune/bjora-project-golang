@@ -12,16 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build wireinject
-
 package user
 
 import (
-	"database/sql"
+	"context"
 
-	"github.com/google/wire"
+	"github.com/bwmarrin/snowflake"
+
+	"github.com/clavinjune/bjora-project-golang/internal/util"
+
+	"github.com/clavinjune/bjora-project-golang/pkg"
 )
 
-func Wire(db *sql.DB) *handler {
-	panic(wire.Build(ProviderSet))
+type service struct {
+	repo     pkg.UserRepository
+	snowNode *snowflake.Node
+}
+
+func (s service) Store(ctx context.Context, u *pkg.UserSpec) (*pkg.UserSpec, error) {
+	u.ID = s.snowNode.Generate()
+	e := u.ToEntity()
+	e.Entity = pkg.NewEntity()
+
+	stored, err := s.repo.Store(ctx, e)
+
+	if err != nil {
+		return nil, util.WrapError(err)
+	}
+
+	result, err := pkg.UserSpecFromEntity(stored)
+	if err != nil {
+		return nil, util.WrapError(err)
+	}
+
+	return result, nil
 }

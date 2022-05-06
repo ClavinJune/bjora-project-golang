@@ -12,36 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package user
+package util_test
 
 import (
-	"net/http"
-	"strings"
+	"testing"
 
-	"github.com/clavinjune/bjora-project-golang/pkg"
-	"github.com/gofiber/fiber/v2"
+	"github.com/bwmarrin/snowflake"
+	"github.com/clavinjune/bjora-project-golang/internal/util"
+	"github.com/stretchr/testify/require"
 )
 
-type handler struct {
-	svc pkg.UserService
-}
+func TestProvideSnowflake(t *testing.T) {
+	t.Parallel()
 
-func (h *handler) ApplyRoute(router fiber.Router) {
-	router.Get("/", h.fetchByEmail())
-}
+	gen1 := util.ProvideSnowflake()
+	gen2 := util.ProvideSnowflake()
 
-func (h *handler) fetchByEmail() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		email := c.Query("email")
-		if strings.TrimSpace(email) == "" {
-			return c.SendStatus(http.StatusNotFound)
-		}
+	ch := make(chan snowflake.ID, 2)
 
-		user, err := h.svc.FetchByEmail(c.Context(), email)
-		if err != nil {
-			return c.SendStatus(http.StatusNotFound)
-		}
-
-		return c.JSON(user)
+	goFunc := func(g *snowflake.Node, c chan<- snowflake.ID) {
+		c <- g.Generate()
 	}
+
+	go goFunc(gen1, ch)
+	go goFunc(gen2, ch)
+
+	ids := [2]snowflake.ID{
+		<-ch,
+		<-ch,
+	}
+
+	r := require.New(t)
+	r.NotEqual(ids[0], ids[1])
 }

@@ -18,7 +18,7 @@ export
 
 check:
 	@go run $(licenser) verify
-	@#go run $(linter) run
+	@go run $(linter) run
 	@go run $(wire) check ./...
 
 clean:
@@ -28,6 +28,15 @@ clean:
 
 db/connect:
 	@PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_HOST}" -U "${POSTGRES_USERNAME}" "${POSTGRES_DATABASE}"
+
+db/connect/test:
+	@PGPASSWORD="${POSTGRES_PASSWORD}_test" psql -p 5433 -h "${POSTGRES_HOST}" -U "${POSTGRES_USERNAME}_test" "${POSTGRES_DATABASE}_test"
+
+db/migrate/create:
+	@go run -tags "postgres" $(migrator) \
+ 	create -ext sql -dir blueprint/db-migration \
+ 	-format "200601021504" \
+ 	create_[change_this]_table
 
 db/migrate/up:
 	@go run -tags "postgres" $(migrator) \
@@ -42,10 +51,16 @@ db/migrate/down:
 	-verbose down
 
 docker/compose/up:
-	@docker compose up
+	@docker compose up -d
+
+docker/compose/up/test:
+	@docker compose -f docker-compose-test.yml up -d
 
 docker/compose/down:
 	@docker compose stop && docker compose down
+
+docker/compose/down/test:
+	@docker compose -f docker-compose-test.yml stop && docker compose -f docker-compose-test.yml down
 
 docker/volume/create:
 	@docker volume create minio-data
@@ -69,12 +84,20 @@ gen: clean tools/install/stringer
 mock:
 	@go run $(mocker) --all --with-expecter --output "./pkg/mocks"
 
-test:
-	@go test -race -v ./...
+test: docker/compose/up/test
+	@sleep 1
+	@go test -count=1 -v ./...
+	@$(MAKE) docker/compose/down/test
 
-test/coverage:
-	@go test -v -json -coverprofile=coverage.out -covermode=count `go list ./... | grep -v mocks` > result.json
+test/fuzz:
+	@go test -v -fuzz=FuzzGenderFrom -fuzztime=1s ./pkg/enum/
+	@go test -v -fuzz=FuzzEnvironmentFrom -fuzztime=1s ./pkg/enum/
+
+test/coverage: docker/compose/up/test
+	@sleep 1
+	@go test -count=1 -v -json -coverprofile=coverage.out -covermode=count `go list ./... | grep -v mocks` > result.json
 	@go tool cover -html=coverage.out
+	@$(MAKE) docker/compose/down/test
 
 tools/install/stringer:
 	@go install $(stringer)

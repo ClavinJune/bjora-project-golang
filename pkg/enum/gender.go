@@ -12,32 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate stringer -type=Role -trimprefix=Role
+//go:generate stringer -type=Gender -trimprefix=Gender
 
-package pkg
+package enum
 
 import "strings"
 
-// Role define role enum
-type Role int8
+// Gender define gender enum
+type Gender int8
 
 const (
-	// RoleUndefined defines undefined role
-	RoleUndefined Role = iota
-	// RoleAdmin defines admin
-	RoleAdmin
-	// RoleMember defines member
-	RoleMember
+	// GenderUndefined defines undefined gender
+	GenderUndefined Gender = iota
+	// GenderMale defines male
+	GenderMale
+	// GenderFemale defines female
+	GenderFemale
 )
 
-// RoleFrom parse str to Role
-func RoleFrom(str string) Role {
+// GenderFrom parse str to Gender
+func GenderFrom(str string) Gender {
 	switch strings.ToUpper(strings.TrimSpace(str)) {
-	case "ADMIN":
-		return RoleAdmin
-	case "MEMBER":
-		return RoleMember
+	case "MALE":
+		return GenderMale
+	case "FEMALE":
+		return GenderFemale
 	}
 
-	return RoleUndefined
+	return GenderUndefined
 }

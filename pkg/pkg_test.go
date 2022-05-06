@@ -12,32 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate stringer -type=Gender -trimprefix=Gender
+package pkg_test
 
-package pkg
+import (
+	"log"
+	"testing"
 
-import "strings"
-
-// Gender define gender enum
-type Gender int8
-
-const (
-	// GenderUndefined defines undefined gender
-	GenderUndefined Gender = iota
-	// GenderMale defines male
-	GenderMale
-	// GenderFemale defines female
-	GenderFemale
+	"github.com/joho/godotenv"
 )
 
-// GenderFrom parse str to Gender
-func GenderFrom(str string) Gender {
-	switch strings.ToUpper(strings.TrimSpace(str)) {
-	case "MALE":
-		return GenderMale
-	case "FEMALE":
-		return GenderFemale
+func TestMain(m *testing.M) {
+	log.Println("setup test environment variable")
+	err := godotenv.Overload("../.env.test")
+	if err != nil {
+		panic(err)
 	}
-
-	return GenderUndefined
+	m.Run()
 }
