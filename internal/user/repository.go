@@ -40,7 +40,7 @@ func (r repository) Store(ctx context.Context, e *pkg.UserEntity) (*pkg.UserEnti
 	}
 
 	defer rows.Close()
-	result, err := r.read(rows)
+	result, err := read(rows)
 	if err != nil {
 		return nil, util.WrapError(err)
 	}
@@ -48,7 +48,7 @@ func (r repository) Store(ctx context.Context, e *pkg.UserEntity) (*pkg.UserEnti
 	return result, nil
 }
 
-func (repository) read(rows *sqlx.Rows) (*pkg.UserEntity, error) {
+func read(rows *sqlx.Rows) (*pkg.UserEntity, error) {
 	if rows.Next() {
 		var row pkg.UserEntity
 		err := rows.StructScan(&row)
