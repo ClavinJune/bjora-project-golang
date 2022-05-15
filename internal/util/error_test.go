@@ -17,6 +17,7 @@ package util_test
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"strings"
 	"testing"
 
@@ -115,6 +116,15 @@ func TestError_Error(t *testing.T) {
 					FileLine: "error_test.go:",
 					Caused:   "sql: no rows in result set",
 				},
+			},
+		},
+		{
+			name: "with double quotes",
+			in:   util.WrapError(errors.New(`"foobar"`)),
+			expected: expectation{
+				FuncName: "util_test.TestError_Error",
+				FileLine: "error_test.go:",
+				Caused:   `"foobar"`,
 			},
 		},
 	}

@@ -36,17 +36,16 @@ func (e *Error) Unwrap() error {
 
 // Error returns error message
 func (e *Error) Error() string {
-	var b strings.Builder
+	var msg string
 
-	var ex *Error
-	if errors.As(e.Err, &ex) {
-		b.WriteString(errFormat(ex.FuncName, ex.FileLine, e.Message, e.Err.Error()))
+	var err *Error
+	if errors.As(e.Err, &err) {
+		msg = errFormat(err.FuncName, err.FileLine, e.Message, e.Err.Error())
 	} else {
-		str := fmt.Sprintf(`"%s"`, strings.ReplaceAll(e.Err.Error(), `"`, `\"`))
-		b.WriteString(str)
+		msg = fmt.Sprintf("%q", e.Err.Error())
 	}
 
-	return errFormat(e.FuncName, e.FileLine, e.Message, b.String())
+	return errFormat(e.FuncName, e.FileLine, e.Message, msg)
 }
 
 func errFormat(fn, fl, msg, err string) string {
